@@ -1,8 +1,8 @@
 #!/bin/bash python
 from tkinter import *
-from pysnmp.hlapi import *
 
-def SnmpGui():
+
+def NetworkUtilGui():
     root = Tk()
     root.geometry("640x640+0+0")
     root.title("Switch Port Availablity")
@@ -16,7 +16,7 @@ def SnmpGui():
     root.mainloop()
 
 def main():
-    SnmpGui()
+    NetworkUtilGui()
 
 if __name__ == '__main__':
     main()
