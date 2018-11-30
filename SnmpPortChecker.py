@@ -36,13 +36,34 @@ class SNMPClient:
                 break
             else:
                 for varBind in varBinds:
-                    print(' = '.join([x.prettyPrint() for x in varBind]))
+                    #print(' = '.join([x.prettyPrint() for x in varBind]))
                     return [x.prettyPrint() for x in varBind]
 
     def snmp_get_next(self, snmp_mib):
-        pass
+        for (errorIndication,
+            errorStatus,
+            errorIndex,
+            varBinds) in nextCmd(SnmpEngine(),
+                          CommunityData( self.community,mpModel=1),
+                          UdpTransportTarget(( self.switch_ip, self.port)),
+                          ContextData(),
+                          ObjectType(ObjectIdentity(snmp_mib["library"],snmp_mib["mib"])),
+                          lexicographicMode=False):
+
+            if errorIndication:
+              print(errorIndication)
+              break
+            elif errorStatus:
+                print('%s at %s' % (errorStatus.prettyPrint(),
+                                    errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
+                break
+            else:
+                for varBind in varBinds:
+                    print(' = '.join([x.prettyPrint() for x in varBind]))
+
     def snmp_walk(self, snmp_mib):
         pass
+
 def main():
     switch_ip = '172.30.186.153'
     community = 'MSAisNS859'
@@ -58,6 +79,10 @@ def main():
     if switch_days_up < days_up:
         print ("The switch hasn't been up long enough")
         print ("It has only been up %d days" %switch_days_up)
+
+    port_state_mib = {"library":"IF-MIB", "mib":"ifOperStatus"}
+    switch_int_status = snmp_client.snmp_get_next(port_state_mib)
+    print (switch_int_status)
 
 if __name__ == '__main__':
     main()
