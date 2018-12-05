@@ -81,14 +81,16 @@ class SNMPClient:
         pass
 
 def list_to_dict(input_list):
+    new_dict = {}
     for i in input_list:
-        print(i)
+        new_dict[(i.split('=')[0])] = (i.split('=')[1])
+    return new_dict
 
 def check_for_down_ints(switch_ints):
     results = []
-    for x in switch_ints:
-        if x[1] == 2:
-            results.append(x)
+    for int, state in switch_ints.items():
+        if state == ' down':
+            results.append(int.split('.')[1])
     return results
 
 def int_last_change(down_ints):
@@ -126,14 +128,15 @@ def main():
     #End port state check
     #Convert the returned list to a dictionary
     interface_dict = list_to_dict(switch_int_status)
+    #print(interface_dict)
 
-    '''
+
     #Block to find Availablity
-    down_ints = check_for_down_ints(switch_int_status)
-    #print(down_ints)
-    last_change = int_last_change(down_ints)
+    down_ints = check_for_down_ints(interface_dict)
+    print(down_ints)
+    #last_change = int_last_change(down_ints)
     #print(last_change)
-'''
+
 
 
 if __name__ == '__main__':
