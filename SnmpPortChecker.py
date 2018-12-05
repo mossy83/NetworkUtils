@@ -5,7 +5,7 @@ import ipaddress
 def ip_check(ip_add):
     try:
         check_ip = ipaddress.ip_address(ip_add)
-        print ("Good")
+
     except ValueError:
         print(" is not a valid IP ")
 
@@ -80,11 +80,15 @@ class SNMPClient:
     def snmp_walk(self, snmp_mib):
         pass
 
+
+
 def list_to_dict(input_list):
     new_dict = {}
     for i in input_list:
         new_dict[(i.split('=')[0])] = (i.split('=')[1])
     return new_dict
+
+
 
 def check_for_down_ints(switch_ints):
     results = []
@@ -93,10 +97,13 @@ def check_for_down_ints(switch_ints):
     for int, state in switch_ints.items():
         if state == ' down':
             results.append(int.split('.')[1])
+
     return results
 
-def interface_last_change(snmp_client, days_up, down_ints):
-    results = []
+
+
+def interface_last_change(snmp_client, days_down, down_ints):
+    results = {}
 
     last_change_mib = {"library":"IF-MIB","mib":"ifLastChange","position":0}
     sys_uptime_mib = {"library":"SNMPv2-MIB","mib":"sysUpTime", "position":0}
@@ -109,14 +116,29 @@ def interface_last_change(snmp_client, days_up, down_ints):
         port_last_change = snmp_client.snmp_get(last_change_mib)
         port_down_time = (sys_uptime - port_last_change)/8640000
 
-        if port_down_time > days_up:
-            results.append(port)
+        if port_down_time > days_down:
+            results[port] = port_down_time.prettyPrint()
     return results
+
+
+def interface_name(snmp_client, port_list):
+    results = {}
+    interface_name_mib = {"library":"IF-MIB", "mib":"ifName", "position":0}
+
+    for key, value in port_list.items():
+        interface_name_mib["position"] = key
+
+        port_name = snmp_client.snmp_get(interface_name_mib)
+
+        if not port_name.prettyPrint().startswith("Vl"):
+            results[port_name.prettyPrint()] = int(float(value))
+    return results
+
 
 def main():
     switch_ip = '172.30.186.11'
     community = 'MSAisNS859'
-    days_up = 101
+    days_down = 101
 
 
     checked_ip = ip_check(switch_ip)
@@ -128,10 +150,10 @@ def main():
 
     #print (client_uptime)
 
-    switch_days_up = client_uptime/86400
-    if switch_days_up < days_up:
+    switch_days_down = client_uptime/86400
+    if switch_days_down < days_down:
         print ("The switch hasn't been up long enough")
-        print ("It has only been up %d days" %switch_days_up)
+        print ("It has only been up %d days" %switch_days_down)
     #End block to verify sufficient switch uptime
 
     #Block to check port state
@@ -148,11 +170,20 @@ def main():
     #Block to find Availablity
     down_ints = check_for_down_ints(interface_dict)
     #print(down_ints)
-    last_change = interface_last_change(snmp_client, days_up, down_ints)
-    print(last_change)
+    last_change = interface_last_change(snmp_client, days_down, down_ints)
     #print(last_change)
+    #End search for available ports
 
-
+    available_ports = interface_name(snmp_client, last_change)
+    #print(available_ports)
+    #Output of available ports in a nice fashion
+    total_down_ports = 0
+    print("Available Interfaces")
+    print("Interface\tDays Down")
+    for port, downtime in available_ports.items():
+        print("%s\t\t%s" %(port, downtime))
+        total_down_ports = total_down_ports + 1
+    print("Total number of down ports: %s" %len(available_ports))
 
 if __name__ == '__main__':
     main()
