@@ -88,16 +88,30 @@ def list_to_dict(input_list):
 
 def check_for_down_ints(switch_ints):
     results = []
+    #For each entry, test if the interface is down
+    #If down, append it to returned results
     for int, state in switch_ints.items():
         if state == ' down':
             results.append(int.split('.')[1])
     return results
 
-def int_last_change(down_ints):
-    split_dict = {}
-    for x in down_ints:
-        print (prettyPrint(x[0][1]))
+def interface_last_change(snmp_client, days_up, down_ints):
+    results = []
 
+    last_change_mib = {"library":"IF-MIB","mib":"ifLastChange","position":0}
+    sys_uptime_mib = {"library":"SNMPv2-MIB","mib":"sysUpTime", "position":0}
+
+    sys_uptime = snmp_client.snmp_get(sys_uptime_mib)
+
+    for port in down_ints:
+        last_change_mib["position"] = int(port)
+
+        port_last_change = snmp_client.snmp_get(last_change_mib)
+        port_down_time = (sys_uptime - port_last_change)/8640000
+
+        if port_down_time > days_up:
+            results.append(port)
+    return results
 
 def main():
     switch_ip = '172.30.186.11'
@@ -129,12 +143,13 @@ def main():
     #Convert the returned list to a dictionary
     interface_dict = list_to_dict(switch_int_status)
     #print(interface_dict)
-
+    #End conversion
 
     #Block to find Availablity
     down_ints = check_for_down_ints(interface_dict)
-    print(down_ints)
-    #last_change = int_last_change(down_ints)
+    #print(down_ints)
+    last_change = interface_last_change(snmp_client, days_up, down_ints)
+    print(last_change)
     #print(last_change)
 
 
