@@ -177,7 +177,6 @@ def main():
     available_ports = interface_name(snmp_client, last_change)
     #print(available_ports)
     #Output of available ports in a nice fashion
-    total_down_ports = 0
     print("Available Interfaces")
     print("Interface\tDays Down")
     for port, downtime in available_ports.items():
