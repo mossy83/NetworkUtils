@@ -1,0 +1,8 @@
+IF-MIB::ifDescr = GigabitEthernet5/7
+IF-MIB::ifType = ethernetCsmacd
+IF-MIB::ifOperStatus.131 = down
+IF-MIB::ifLastChange.26 = 28304
+IF-MIB::ifName.57 = Gi2/9
+IF-MIB::ifAlias.14 = *** Tape File Phone **
+SNMPv2-MIB::sysUpTime.0 = 3963119283
+SNMPv2-MIB::snmpEngineTime.0
