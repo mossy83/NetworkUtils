@@ -1,13 +1,5 @@
 #!/bin/bash python
 from pysnmp.hlapi import *
-import ipaddress
-
-def ip_check(ip_add):
-    try:
-        check_ip = ipaddress.ip_address(ip_add)
-
-    except ValueError:
-        print(" is not a valid IP ")
 
 class SNMPClient:
 
@@ -136,12 +128,11 @@ def interface_name(snmp_client, port_list):
 
 
 def main():
+
     switch_ip = '172.30.186.11'
     community = 'MSAisNS859'
     days_down = 101
 
-
-    checked_ip = ip_check(switch_ip)
 
     #Code block to verify that the switch has been up long enough
     uptime_mib = {"library":"SNMP-FRAMEWORK-MIB","mib":"snmpEngineTime","position":0}
