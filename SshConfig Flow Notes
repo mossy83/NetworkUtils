@@ -1,0 +1,19 @@
+Import devices from a CSV File
+
+Test that the IP is valid and pings
+
+Offer the option to continue without ping
+
+Write a config backup to TFTP share
+  If fails offer to continue
+
+Import commands from a file
+
+Test for show Commands
+  If doing show commands use send_command
+  else
+  use send_config
+
+Send it to config mode
+
+exit with write mem 

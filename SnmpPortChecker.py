@@ -129,7 +129,7 @@ def interface_name(snmp_client, port_list):
 
 def main():
 
-    switch_ip = '172.30.186.11'
+    switch_ip = '172.30.186.152'
     community = 'MSAisNS859'
     days_down = 101
 
@@ -172,7 +172,7 @@ def main():
     print("Interface\tDays Down")
     for port, downtime in available_ports.items():
         print("%s\t\t%s" %(port, downtime))
-        total_down_ports = total_down_ports + 1
+
     print("Total number of down ports: %s" %len(available_ports))
 
 if __name__ == '__main__':
