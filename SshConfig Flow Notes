@@ -1,4 +1,4 @@
-Import devices from a CSV File
+Import devices from a JSON File
 
 Test that the IP is valid and pings
 
@@ -16,4 +16,4 @@ Test for show Commands
 
 Send it to config mode
 
-exit with write mem 
+exit with write mem
