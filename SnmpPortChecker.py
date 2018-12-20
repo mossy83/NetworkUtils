@@ -10,6 +10,7 @@ class SNMPClient:
 
     def snmp_get(self, snmp_mib):
         snmp_get_data = []
+
         for (errorIndication,
              errorStatus,
              errorIndex,
@@ -27,6 +28,7 @@ class SNMPClient:
                 print('%s at %s' % (errorStatus.prettyPrint(),
                                     errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
                 break
+
             else:
                 for name, val in varBinds:
                     snmp_get_data.append(val)
@@ -35,8 +37,9 @@ class SNMPClient:
                     return snmp_get_data[0]
                 else:
                     return snmp_get_data
-                    #print(' = '.join([x.prettyPrint() for x in varBind]))
-                    #return snmp_get_data
+                #print(' = '.join([x.prettyPrint() for x in varBind]))
+                #return snmp_get_data
+
 
     def snmp_get_next(self, snmp_mib):
         results = []
@@ -60,8 +63,6 @@ class SNMPClient:
             else:
                 for varBind in varBinds:
                     results.append((" = ".join([x.prettyPrint() for x in varBind])))
-
-
 
         return results
 
@@ -106,6 +107,7 @@ def interface_last_change(snmp_client, days_down, down_ints):
         last_change_mib["position"] = int(port)
 
         port_last_change = snmp_client.snmp_get(last_change_mib)
+
         port_down_time = (sys_uptime - port_last_change)/8640000
 
         if port_down_time > days_down:
@@ -129,7 +131,7 @@ def interface_name(snmp_client, port_list):
 
 def main():
 
-    switch_ip = '172.30.186.152'
+    switch_ip = '172.30.186.11'
     community = 'MSAisNS859'
     days_down = 101
 
@@ -161,6 +163,7 @@ def main():
     #Block to find Availablity
     down_ints = check_for_down_ints(interface_dict)
     #print(down_ints)
+
     last_change = interface_last_change(snmp_client, days_down, down_ints)
     #print(last_change)
     #End search for available ports
